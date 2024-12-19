@@ -12,18 +12,18 @@
             <form method="POST" action="{{ route('task.store') }}">
                 @csrf
                 <label>タスク：</label>
-                <input class="task-title" name="task_title" type="text" />
+                <input id="new_task_title" class="task-title" name="task_title" type="text" />
                 <label>説明：</label>
-                <textarea class="task-description" name="task_description"></textarea>
+                <textarea id="new_task_description" class="task-description" name="task_description"></textarea>
                 <label>開始日時：</label>
-                <input class="task-date" name="start_date" type="datetime-local" />
+                <input id="new_start_date" class="task-date" name="start_date" type="datetime-local" />
                 <label>終了日時：</label>
-                <input class="task-date" name="end_date" type="datetime-local" />
+                <input id="new_end_date" class="task-date" name="end_date" type="datetime-local" />
                 <label>色：</label>
                 <select class="task-color" name="task_color">
                     <option value="red" selected>赤</option>
                     <option value="blue">青</option>
-                    <option value="yellow">黄</option>
+                    <option value="green">緑</option>
                 </select>
                 <div class="modal-button">
                     {{-- type="button"がないとonclickが発火しない --}}
@@ -52,7 +52,7 @@
                 <select id="task_color" class="task-color" name="task_color">
                     <option value="red">赤</option>
                     <option value="blue">青</option>
-                    <option value="yellow">黄</option>
+                    <option value="green">緑</option>
                 </select>
                 <label><input id="is_completed" type="radio" name="is_completed" value="true" />完了</label>
                 <label><input id="is_completed" type="radio" name="is_completed" value="false" checked />未完了</label>
@@ -81,7 +81,7 @@
             /*ページ全体に対する配置*/
             position: absolute;
             /*要素が重なる時に大きい値ほど上に重なる*/
-            z-index: 1;
+            z-index: 2;
             /*top、left、right、bottomを0にすることで画面全体を覆う形にする*/
             top: 0;
             left: 0;
