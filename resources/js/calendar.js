@@ -3,11 +3,22 @@ import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
+import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
 
-function formatDate(date) {
+function formatDate(date, message, startDate) {
     //dateを元にJavaScriptのDateオブジェクト(時間要素(年、月、日、時、分、秒)を個別に取得できる)を生成
     const dt = new Date(date);
+    if (startDate) {
+        const startDt = new Date(startDate);
+        if (message === "end_date") {
+            //例えば、setDate(25)とすると、25日に設定
+            dt.setDate(dt.getDate() - 1);
+            if (dt < startDt) {
+                dt.setDate(dt.getDate() + 1);
+            }
+        }
+    }
     const year = dt.getFullYear();
     //先頭に0を付け、1桁の場合は1月→01、2桁の場合は12月→012。dt.getMonth()は、0～11（1月が0）なので、+1することで1～12にする。slice(-2)は、右端2個を取得する。
     const month = ("0" + (dt.getMonth() + 1)).slice(-2);
@@ -22,13 +33,18 @@ function formatDate(date) {
 let calendarEl = document.getElementById("calendar");
 
 let calendar = new Calendar(calendarEl, {
-    plugins: [dayGridPlugin, timeGridPlugin, listPlugin],
+    plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
     initialView: "dayGridMonth",
     //https://fullcalendar.io/docs/customButtons
     customButtons: {
         taskAddButton: {
             text: "タスク追加",
             click: function () {
+                document.getElementById("new_task_title").value = "";
+                document.getElementById("new_task_description").value = "";
+                document.getElementById("new_start_date").value = "";
+                document.getElementById("new_end_date").value = "";
+
                 document.getElementById("modal").style.display = "flex";
             },
         },
@@ -39,7 +55,7 @@ let calendar = new Calendar(calendarEl, {
         right: "taskAddButton dayGridMonth,timeGridWeek,listWeek",
     },
     height: 730,
-    //events:は何らかの処理が行われる度に実行される。infoはstartとendオブジェクトがあり、start: Sun Dec 01 2024, end: Sun Jan 12 2025のように、表示されているカレンダーの開始と終了日付が格納されている
+    //events:は何らかの処理が行われる度に実行される。https://fullcalendar.io/docs/events-function infoオブジェクト内の構造
     events: function (info, successCallback, failureCallback) {
         axios
             .post("/task/get", {
@@ -58,12 +74,14 @@ let calendar = new Calendar(calendarEl, {
                 alert("タスクの表示に失敗しました");
             });
     },
+    //https://fullcalendar.io/docs/eventClick infoオブジェクト内の構造
     eventClick: function (info) {
         //infoオブジェクトに沿った取り出し方ではないところがある
         document.getElementById("task_id").value = info.event.id;
         document.getElementById("task_title").value = info.event.title;
         document.getElementById("task_description").value =
             info.event.extendedProps.description;
+        //blade内に同じid属性を指定しないように
         document.getElementById("start_date").value = formatDate(
             info.event.start
         );
@@ -73,6 +91,20 @@ let calendar = new Calendar(calendarEl, {
         document.getElementById("delete-task-id").value = info.event.id;
 
         document.getElementById("update-modal").style.display = "flex";
+    },
+    selectable: true,
+    //https://fullcalendar.io/docs/select-callback infoオブジェクト内の構造
+    select: function (info) {
+        document.getElementById("new_start_date").value = formatDate(
+            info.start
+        );
+        document.getElementById("new_end_date").value = formatDate(
+            info.end,
+            "end_date",
+            info.start
+        );
+
+        document.getElementById("modal").style.display = "flex";
     },
 });
 
