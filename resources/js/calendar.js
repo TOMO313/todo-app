@@ -6,6 +6,20 @@ import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
 
+//モーダルの外側をクリックするとモーダルが閉じる
+const outsideModals = document.querySelectorAll(".modal-outside");
+
+//querySelectorAll()を使う場合、forEach()で回す
+outsideModals.forEach((outsideModal) => {
+    //addEventListener()はeventオブジェクトを返し、eventオブジェクトの中にはtargetというクリックしたHTML要素が入っている
+    outsideModal.addEventListener("click", function (event) {
+        //closest(".modal-inside")はevent.targetの親要素にmodal-insideクラスがあればその親要素を返し、なければnullを返す。つまり、modal-insideクラス内の要素をクリックした場合は何も起こらないが、クラス外の要素をクリックした場合はモーダルが閉じる。
+        if (!event.target.closest(".modal-inside")) {
+            outsideModal.style.display = "none";
+        }
+    });
+});
+
 function formatDate(date, message, startDate) {
     //dateを元にJavaScriptのDateオブジェクト(時間要素(年、月、日、時、分、秒)を個別に取得できる)を生成
     const dt = new Date(date);
@@ -66,7 +80,6 @@ let calendar = new Calendar(calendarEl, {
             .then(function (response) {
                 //カレンダーに表示されているタスクを全て削除
                 calendar.removeAllEvents();
-                console.log(response.data);
                 //https://fullcalendar.io/docs/event-parsing、Fullcalendarが指定するプロパティに値が入っている場合、カレンダーに表示する(task_title as titleのように、titleプロパティに値が入っている場合)
                 successCallback(response.data);
             })
