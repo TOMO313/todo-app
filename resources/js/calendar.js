@@ -54,11 +54,6 @@ let calendar = new Calendar(calendarEl, {
         taskAddButton: {
             text: "タスク追加",
             click: function () {
-                document.getElementById("new_task_title").value = "";
-                document.getElementById("new_task_description").value = "";
-                document.getElementById("new_start_date").value = "";
-                document.getElementById("new_end_date").value = "";
-
                 document.getElementById("modal").style.display = "flex";
             },
         },

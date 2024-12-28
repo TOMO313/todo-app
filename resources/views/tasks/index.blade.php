@@ -12,15 +12,24 @@
             <form method="POST" action="{{ route('task.store') }}">
                 @csrf
                 <label>タスク：</label>
-                <input id="new_task_title" class="task-title" name="task_title" type="text" />
+                <input id="new_task_title" class="task-title" name="task_title" type="text" value="{{ old('task_title') }}" />
+                @error('task_title')
+                <div style="color: red;">{{ $message }}</div>
+                @enderror
                 <label>説明：</label>
-                <textarea id="new_task_description" class="task-description" name="task_description"></textarea>
+                <textarea id="new_task_description" class="task-description" name="task_description">{{ old('task_description') }}</textarea>
                 <label>開始日時：</label>
-                <input id="new_start_date" class="task-date" name="start_date" type="datetime-local" />
+                <input id="new_start_date" class="task-date" name="start_date" type="datetime-local" value="{{ old('start_date') }}" />
+                @error('start_date')
+                <div style="color: red;">{{ $message }}</div>
+                @enderror
                 <label>終了日時：</label>
-                <input id="new_end_date" class="task-date" name="end_date" type="datetime-local" />
+                <input id="new_end_date" class="task-date" name="end_date" type="datetime-local" value="{{ old('end_date') }}" />
+                @error('end_date')
+                <div style="color: red;">{{ $message }}</div>
+                @enderror
                 <label>色：</label>
-                <select class="task-color" name="task_color">
+                <select class=" task-color" name="task_color">
                     <option value="red" selected>赤</option>
                     <option value="blue">青</option>
                     <option value="green">緑</option>
@@ -42,12 +51,21 @@
                 <input id="task_id" name="task_id" type="hidden" value="" />
                 <label>タスク：</label>
                 <input id="task_title" class="task-title" name="task_title" type="text" value="" />
+                @error('task_title')
+                <div style="color: red;">{{ $message }}</div>
+                @enderror
                 <label>説明：</label>
                 <textarea id="task_description" class="task-description" name="task_description"></textarea>
                 <label>開始日時：</label>
                 <input id="start_date" class="task-date" name="start_date" type="datetime-local" value="" />
+                @error('start_date')
+                <div style="color: red;">{{ $message }}</div>
+                @enderror
                 <label>終了日時：</label>
                 <input id="end_date" class="task-date" name="end_date" type="datetime-local" value="" />
+                @error('end_date')
+                <div style="color: red;">{{ $message }}</div>
+                @enderror
                 <label>色：</label>
                 <select id="task_color" class="task-color" name="task_color">
                     <option value="red">赤</option>
