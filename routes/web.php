@@ -9,6 +9,7 @@ Route::get('/', function () {
 })->middleware('auth')->name('dashboard');
 
 Route::controller(TaskController::class)->middleware('auth')->group(function () {
+    Route::get('/task/completed', 'getCompletedTask')->name('task.completed');
     Route::post('/task/store', 'taskStore')->name('task.store');
     Route::post('/task/get', 'getTask')->name('task.get');
     Route::put('/task/update', 'updateTask')->name('task.update');
