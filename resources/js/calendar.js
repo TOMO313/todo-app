@@ -63,7 +63,7 @@ let calendar = new Calendar(calendarEl, {
         center: "title",
         right: "taskAddButton dayGridMonth,timeGridWeek,listWeek",
     },
-    height: 730,
+    height: 650,
     //events:は何らかの処理が行われる度に実行される。https://fullcalendar.io/docs/events-function infoオブジェクト内の構造
     events: function (info, successCallback, failureCallback) {
         axios

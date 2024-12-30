@@ -1,93 +1,128 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Your Task') }}
-        </h2>
-    </x-slot>
-
-    <div id="calendar"></div>
-
-    <div id="modal" class="modal-outside">
-        <div class="modal-inside">
-            <form method="POST" action="{{ route('task.store') }}">
-                @csrf
-                <label>タスク：</label>
-                <input id="new_task_title" class="task-title" name="task_title" type="text" value="{{ old('task_title') }}" />
-                @error('task_title')
-                <div style="color: red;">{{ $message }}</div>
-                @enderror
-                <label>説明：</label>
-                <textarea id="new_task_description" class="task-description" name="task_description">{{ old('task_description') }}</textarea>
-                <label>開始日時：</label>
-                <input id="new_start_date" class="task-date" name="start_date" type="datetime-local" value="{{ old('start_date') }}" />
-                @error('start_date')
-                <div style="color: red;">{{ $message }}</div>
-                @enderror
-                <label>終了日時：</label>
-                <input id="new_end_date" class="task-date" name="end_date" type="datetime-local" value="{{ old('end_date') }}" />
-                @error('end_date')
-                <div style="color: red;">{{ $message }}</div>
-                @enderror
-                <label>色：</label>
-                <select class=" task-color" name="task_color">
-                    <option value="red" selected>赤</option>
-                    <option value="blue">青</option>
-                    <option value="green">緑</option>
-                </select>
-                <div class="modal-button">
-                    {{-- type="button"がないとonclickが発火しない --}}
-                    <button type="button" onclick="closeModal()">キャンセル</button>
-                    <button type="submit">追加</button>
+    <div class="tabs">
+        <ul class="tab-list">
+            {{-- tab-indexを指定すると、tabキーを押下して選択できる(値が大きいほど優先して選択される) --}}
+            <li class="tab-item active" tabindex="0">Task List</li>
+            <li class="tab-item" tabindex="0">Completed Task</li>
+        </ul>
+        <div class="tab-panel active">
+            <div id="calendar"></div>
+            <div id="modal" class="modal-outside">
+                <div class="modal-inside">
+                    <form method="POST" action="{{ route('task.store') }}">
+                        @csrf
+                        <label>タスク：</label>
+                        <input id="new_task_title" class="task-title" name="task_title" type="text" value="{{ old('task_title') }}" />
+                        @error('task_title')
+                        <div style="color: red;">{{ $message }}</div>
+                        @enderror
+                        <label>説明：</label>
+                        <textarea id="new_task_description" class="task-description" name="task_description">{{ old('task_description') }}</textarea>
+                        <label>開始日時：</label>
+                        <input id="new_start_date" class="task-date" name="start_date" type="datetime-local" value="{{ old('start_date') }}" />
+                        @error('start_date')
+                        <div style="color: red;">{{ $message }}</div>
+                        @enderror
+                        <label>終了日時：</label>
+                        <input id="new_end_date" class="task-date" name="end_date" type="datetime-local" value="{{ old('end_date') }}" />
+                        @error('end_date')
+                        <div style="color: red;">{{ $message }}</div>
+                        @enderror
+                        <label>色：</label>
+                        <select class=" task-color" name="task_color">
+                            <option value="red" selected>赤</option>
+                            <option value="blue">青</option>
+                            <option value="green">緑</option>
+                        </select>
+                        <div class="modal-button">
+                            {{-- type="button"がないとonclickが発火しない --}}
+                            <button type="button" onclick="closeModal()">キャンセル</button>
+                            <button type="submit">追加</button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
+            <div id="update-modal" class="modal-outside">
+                <div class="modal-inside">
+                    <form method="POST" action="{{ route('task.update') }}">
+                        @csrf
+                        @method('PUT')
+                        <input id="task_id" name="task_id" type="hidden" value="" />
+                        <label>タスク：</label>
+                        <input id="task_title" class="task-title" name="task_title" type="text" value="" />
+                        @error('task_title')
+                        <div style="color: red;">{{ $message }}</div>
+                        @enderror
+                        <label>説明：</label>
+                        <textarea id="task_description" class="task-description" name="task_description"></textarea>
+                        <label>開始日時：</label>
+                        <input id="start_date" class="task-date" name="start_date" type="datetime-local" value="" />
+                        @error('start_date')
+                        <div style="color: red;">{{ $message }}</div>
+                        @enderror
+                        <label>終了日時：</label>
+                        <input id="end_date" class="task-date" name="end_date" type="datetime-local" value="" />
+                        @error('end_date')
+                        <div style="color: red;">{{ $message }}</div>
+                        @enderror
+                        <label>色：</label>
+                        <select id="task_color" class="task-color" name="task_color">
+                            <option value="red">赤</option>
+                            <option value="blue">青</option>
+                            <option value="green">緑</option>
+                        </select>
+                        <label><input id="is_completed" type="radio" name="is_completed" value="true" />完了</label>
+                        <label><input id="is_completed" type="radio" name="is_completed" value="false" checked />未完了</label>
+                        <div class="modal-button">
+                            <button type="button" onclick="closeUpdateModal()">キャンセル</button>
+                            <button type="submit">更新</button>
+                        </div>
+                    </form>
+                    <form id="delete-task-form" class="delete-task-form" method="POST" action="{{ route('task.delete') }}">
+                        @csrf
+                        @method('DELETE')
+                        <input id="delete-task-id" name="delete_task_id" type="hidden" value="" />
+                        <button class="delete-button" type="button" onclick="deleteTask()">削除</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="tab-panel">
+            <div class="flex justify-center">
+                <div id="chart_div" class="mt-10">
+            </div>
+        </div>
+        <script>
+            google.charts.load('current', {
+                'packages': ['corechart'],
+                'language': 'ja'
+            });
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Complete');
+                data.addColumn('number', 'Count');
+                {{-- @jsonはbladeコンポーネントに渡した場合にコンパイルされないため、汎用的な@jsを使用。{completedCount: 1, notCompletedCount: 2}のようにPHP配列をJSON形式に変換できる。 --}}
+                const count = @js($data);
+                data.addRows([
+                    ['Completed Task', count.completedCount],
+                    ['Not Completed Task', count.notCompletedCount],
+                ]);
+
+                var options = {
+                    'title': 'Your Completed Task Rate',
+                    'width': 900,
+                    'height': 600,
+                    is3D: true,
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
+            }
+        </script>
         </div>
     </div>
-
-    <div id="update-modal" class="modal-outside">
-        <div class="modal-inside">
-            <form method="POST" action="{{ route('task.update') }}">
-                @csrf
-                @method('PUT')
-                <input id="task_id" name="task_id" type="hidden" value="" />
-                <label>タスク：</label>
-                <input id="task_title" class="task-title" name="task_title" type="text" value="" />
-                @error('task_title')
-                <div style="color: red;">{{ $message }}</div>
-                @enderror
-                <label>説明：</label>
-                <textarea id="task_description" class="task-description" name="task_description"></textarea>
-                <label>開始日時：</label>
-                <input id="start_date" class="task-date" name="start_date" type="datetime-local" value="" />
-                @error('start_date')
-                <div style="color: red;">{{ $message }}</div>
-                @enderror
-                <label>終了日時：</label>
-                <input id="end_date" class="task-date" name="end_date" type="datetime-local" value="" />
-                @error('end_date')
-                <div style="color: red;">{{ $message }}</div>
-                @enderror
-                <label>色：</label>
-                <select id="task_color" class="task-color" name="task_color">
-                    <option value="red">赤</option>
-                    <option value="blue">青</option>
-                    <option value="green">緑</option>
-                </select>
-                <label><input id="is_completed" type="radio" name="is_completed" value="true" />完了</label>
-                <label><input id="is_completed" type="radio" name="is_completed" value="false" checked />未完了</label>
-                <div class="modal-button">
-                    <button type="button" onclick="closeUpdateModal()">キャンセル</button>
-                    <button type="submit">更新</button>
-                </div>
-            </form>
-            <form id="delete-task-form" class="delete-task-form" method="POST" action="{{ route('task.delete') }}">
-                @csrf
-                @method('DELETE')
-                <input id="delete-task-id" name="delete_task_id" type="hidden" value="" />
-                <button class="delete-button" type="button" onclick="deleteTask()">削除</button>
-            </form>
-        </div>
-    </div>
-
     <style>
         .modal-outside {
             /*要素を消す*/

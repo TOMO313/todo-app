@@ -17,7 +17,7 @@ class TaskController extends Controller
 
         $data = ['completedCount' => $completedCount, 'notCompletedCount' => $notCompletedCount]; //blade側で2回@jsをしなくてはならないため、PHP配列として格納
 
-        return view('tasks/task-completed', compact('data'));
+        return view('tasks/index', compact('data'));
     }
 
     public function taskStore(TaskRequest $request, Task $task)
